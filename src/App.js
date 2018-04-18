@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import PeopleQuery from "./components/PeopleQuery";
+import PeopleQuery from "./components/queries/PeopleQuery";
 import List from "./components/List";
 
 import logo from "./logo.png";

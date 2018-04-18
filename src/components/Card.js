@@ -1,4 +1,5 @@
 import React from "react";
+import DeletePersonMutation from "./mutations/DeletePersonMutation";
 
 const cardStyle = {
   height: "300px",
@@ -22,6 +23,8 @@ const Card = props => (
     <br />
     <p>Film Appearances:</p>
     <p>{props.films.length}</p>
+    <br />
+    <DeletePersonMutation id={props.id} />
   </div>
 );
 

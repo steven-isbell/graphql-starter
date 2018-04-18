@@ -143,13 +143,13 @@ const Mutation = new GraphQLObjectType({
         }
       },
       deletePerson: {
-        type: new GraphQLList(PersonType),
+        type: GraphQLInt,
         args: {
           id: { type: GraphQLNonNull(GraphQLInt) }
         },
         resolve(root, args) {
           users = users.filter(user => user.id !== args.id);
-          return users;
+          return args.id;
         }
       },
       updatePerson: {
