@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 
-import logo from "./logo.svg";
+import PeopleQuery from "./components/PeopleQuery";
+import List from "./components/List";
+
+import logo from "./logo.png";
 import "./App.css";
 
 class App extends Component {
@@ -9,8 +12,9 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
+          <h1 className="App-title">Welcome to GraphQL</h1>
         </header>
+        <PeopleQuery render={props => <List list={props.people} />} />
       </div>
     );
   }
