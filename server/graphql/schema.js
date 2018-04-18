@@ -3,11 +3,13 @@ const {
   GraphQLObjectType,
   GraphQLString,
   GraphQLInt,
-  GraphQLList
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLID
 } = require("graphql");
 const axios = require("axios");
 
-const users = require(`${__dirname}/model`);
+let users = require(`${__dirname}/model`);
 
 const BASE_URL = "http://www.swapi.co";
 
@@ -46,7 +48,6 @@ const PersonType = new GraphQLObjectType({
       homeworld: {
         type: HomeWorldType,
         resolve(person) {
-          console.log(person);
           return axios.get(person.homeworld).then(response => response.data);
         }
       }
@@ -107,7 +108,7 @@ const Query = new GraphQLObjectType({
       person: {
         type: PersonType,
         args: {
-          id: { type: GraphQLInt }
+          id: { type: GraphQLNonNull(GraphQLInt) }
         },
         resolve(root, args) {
           return users.filter(user => user.id === args.id)[0];
@@ -130,7 +131,7 @@ const Mutation = new GraphQLObjectType({
       addPerson: {
         type: new GraphQLList(PersonType),
         args: {
-          id: { type: GraphQLInt },
+          id: { type: GraphQLNonNull(GraphQLInt) },
           name: { type: GraphQLString },
           height: { type: GraphQLInt },
           films: { type: new GraphQLList(GraphQLString) },
@@ -139,6 +140,39 @@ const Mutation = new GraphQLObjectType({
         resolve(root, args) {
           users.push({ ...args });
           return users;
+        }
+      },
+      deletePerson: {
+        type: new GraphQLList(PersonType),
+        args: {
+          id: { type: GraphQLNonNull(GraphQLInt) }
+        },
+        resolve(root, args) {
+          users = users.filter(user => user.id !== args.id);
+          return users;
+        }
+      },
+      updatePerson: {
+        type: PersonType,
+        args: {
+          id: { type: GraphQLNonNull(GraphQLInt) },
+          name: { type: GraphQLString },
+          height: { type: GraphQLInt },
+          films: { type: new GraphQLList(GraphQLString) },
+          homeworld: { type: GraphQLString }
+        },
+        resolve(root, args) {
+          const index = users.findIndex(val => val.id === args.id);
+          const filtered = users[index];
+          const update = {
+            ...filtered,
+            name: args.name || filtered.name,
+            height: args.height || filtered.height,
+            films: args.films || filtered.films,
+            homeworld: args.homeworld || filtered.homeworld
+          };
+          users[index] = update;
+          return users[index];
         }
       }
     };
