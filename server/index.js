@@ -12,11 +12,19 @@ const app = express();
 app.use(json());
 app.use(cors());
 
-app.get(
+app.use(
   "/graphql",
   graphqlHTTP({
     schema,
     graphiql: true
+  })
+);
+
+app.post(
+  "/graphql",
+  graphqlHTTP({
+    schema,
+    graphiql: false
   })
 );
 

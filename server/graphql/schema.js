@@ -7,11 +7,52 @@ const {
 } = require("graphql");
 const axios = require("axios");
 
+const users = require(`${__dirname}/model`);
+
 const BASE_URL = "http://www.swapi.co";
 
 function getFilms(url) {
   return axios.get(url).then(response => response.data);
 }
+
+const PersonType = new GraphQLObjectType({
+  name: "Person",
+  fields() {
+    return {
+      id: {
+        type: GraphQLInt,
+        resolve(person) {
+          return person.id;
+        }
+      },
+      name: {
+        type: GraphQLString,
+        resolve(person) {
+          return person.name;
+        }
+      },
+      height: {
+        type: GraphQLInt,
+        resolve(person) {
+          return person.height;
+        }
+      },
+      films: {
+        type: new GraphQLList(MovieType),
+        resolve(person) {
+          return person.films[0] ? person.films.map(getFilms) : [];
+        }
+      },
+      homeworld: {
+        type: HomeWorldType,
+        resolve(person) {
+          console.log(person);
+          return axios.get(person.homeworld).then(response => response.data);
+        }
+      }
+    };
+  }
+});
 
 const MovieType = new GraphQLObjectType({
   name: "Movie",
@@ -33,26 +74,26 @@ const MovieType = new GraphQLObjectType({
   }
 });
 
-const PersonType = new GraphQLObjectType({
-  name: "Person",
+const HomeWorldType = new GraphQLObjectType({
+  name: "HomeWorld",
   fields() {
     return {
       name: {
         type: GraphQLString,
-        resolve(person) {
-          return person.name;
+        resolve(world) {
+          return world.name;
         }
       },
-      height: {
-        type: GraphQLInt,
-        resolve(person) {
-          return person.height;
+      climate: {
+        type: GraphQLString,
+        resolve(world) {
+          return world.climate;
         }
       },
-      movies: {
-        type: new GraphQLList(MovieType),
-        resolve(person) {
-          return person.films.map(getFilms);
+      population: {
+        type: GraphQLString,
+        resolve(world) {
+          return world.population;
         }
       }
     };
@@ -66,12 +107,38 @@ const Query = new GraphQLObjectType({
       person: {
         type: PersonType,
         args: {
-          id: { type: GraphQLString }
+          id: { type: GraphQLInt }
         },
         resolve(root, args) {
-          return axios
-            .get(`${BASE_URL}/api/people/${args.id}`)
-            .then(response => response.data);
+          return users.filter(user => user.id === args.id)[0];
+        }
+      },
+      people: {
+        type: new GraphQLList(PersonType),
+        resolve(root, args) {
+          return users;
+        }
+      }
+    };
+  }
+});
+
+const Mutation = new GraphQLObjectType({
+  name: "Mutation",
+  fields() {
+    return {
+      addPerson: {
+        type: new GraphQLList(PersonType),
+        args: {
+          id: { type: GraphQLInt },
+          name: { type: GraphQLString },
+          height: { type: GraphQLInt },
+          films: { type: new GraphQLList(GraphQLString) },
+          homeworld: { type: GraphQLString }
+        },
+        resolve(root, args) {
+          users.push({ ...args });
+          return users;
         }
       }
     };
@@ -79,5 +146,6 @@ const Query = new GraphQLObjectType({
 });
 
 module.exports = new GraphQLSchema({
-  query: Query
+  query: Query,
+  mutation: Mutation
 });
