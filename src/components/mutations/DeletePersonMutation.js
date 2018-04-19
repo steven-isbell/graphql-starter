@@ -10,7 +10,7 @@ export const DELETE_PERSON = gql`
   }
 `;
 
-const DeletePersonMutation = ({ id }) => (
+const DeletePersonMutation = props => (
   <Mutation
     mutation={DELETE_PERSON}
     update={(cache, { data: { deletePerson } }) => {
@@ -23,13 +23,7 @@ const DeletePersonMutation = ({ id }) => (
     }}
   >
     {(deletePerson, { loading, error }) => (
-      <div>
-        <button onClick={() => deletePerson({ variables: { id } })}>
-          Delete
-        </button>
-        {loading && <p>Loading...</p>}
-        {error && <p>Error :(</p>}
-      </div>
+      <div>{props.children(loading, error, deletePerson)}</div>
     )}
   </Mutation>
 );

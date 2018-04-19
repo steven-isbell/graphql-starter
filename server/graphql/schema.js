@@ -129,7 +129,7 @@ const Mutation = new GraphQLObjectType({
   fields() {
     return {
       addPerson: {
-        type: new GraphQLList(PersonType),
+        type: PersonType,
         args: {
           id: { type: GraphQLNonNull(GraphQLInt) },
           name: { type: GraphQLString },

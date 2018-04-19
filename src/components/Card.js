@@ -18,13 +18,27 @@ const Card = props => (
   <div style={cardStyle}>
     <p>Character:</p>
     <h1>{props.name}</h1>
-    <p>Homeworld: </p>
-    <h2>{props.homeworld.name}</h2>
+    <p>{props.height}</p>
     <br />
-    <p>Film Appearances:</p>
+    <h2>Homeworld</h2>
+    <p>{props.homeworld.name}</p>
+    <h2>Number of Film Appearances</h2>
     <p>{props.films.length}</p>
-    <br />
-    <DeletePersonMutation id={props.id} />
+    <DeletePersonMutation>
+      {(loading, err, deletePerson) => {
+        return (
+          <div>
+            <button
+              onClick={() => deletePerson({ variables: { id: props.id } })}
+            >
+              Delete
+            </button>
+            {loading && <p>Loading...</p>}
+            {err && <p>Error :(</p>}
+          </div>
+        );
+      }}
+    </DeletePersonMutation>
   </div>
 );
 
