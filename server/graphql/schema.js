@@ -4,8 +4,7 @@ const {
   GraphQLString,
   GraphQLInt,
   GraphQLList,
-  GraphQLNonNull,
-  GraphQLID
+  GraphQLNonNull
 } = require("graphql");
 const axios = require("axios");
 
@@ -106,7 +105,7 @@ const Query = new GraphQLObjectType({
   fields() {
     return {
       person: {
-        type: PersonType,
+        type: GraphQLNonNull(PersonType),
         args: {
           id: { type: GraphQLNonNull(GraphQLInt) }
         },
@@ -124,6 +123,14 @@ const Query = new GraphQLObjectType({
   }
 });
 
+const personTypeArgs = {
+  id: { type: GraphQLNonNull(GraphQLInt) },
+  name: { type: GraphQLString },
+  height: { type: GraphQLInt },
+  films: { type: new GraphQLList(GraphQLString) },
+  homeworld: { type: GraphQLString }
+};
+
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
   fields() {
@@ -131,15 +138,11 @@ const Mutation = new GraphQLObjectType({
       addPerson: {
         type: PersonType,
         args: {
-          id: { type: GraphQLNonNull(GraphQLInt) },
-          name: { type: GraphQLString },
-          height: { type: GraphQLInt },
-          films: { type: new GraphQLList(GraphQLString) },
-          homeworld: { type: GraphQLString }
+          ...personTypeArgs
         },
         resolve(root, args) {
           users.push({ ...args });
-          return users;
+          return { ...args };
         }
       },
       deletePerson: {
@@ -155,11 +158,7 @@ const Mutation = new GraphQLObjectType({
       updatePerson: {
         type: PersonType,
         args: {
-          id: { type: GraphQLNonNull(GraphQLInt) },
-          name: { type: GraphQLString },
-          height: { type: GraphQLInt },
-          films: { type: new GraphQLList(GraphQLString) },
-          homeworld: { type: GraphQLString }
+          ...personTypeArgs
         },
         resolve(root, args) {
           const index = users.findIndex(val => val.id === args.id);
