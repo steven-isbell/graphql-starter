@@ -5,19 +5,19 @@ const {
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull
-} = require("graphql");
-const axios = require("axios");
+} = require('graphql');
+const axios = require('axios');
 
 let users = require(`${__dirname}/model`);
 
-const BASE_URL = "http://www.swapi.co";
+const BASE_URL = 'http://www.swapi.co';
 
 function getFilms(url) {
   return axios.get(url).then(response => response.data);
 }
 
 const PersonType = new GraphQLObjectType({
-  name: "Person",
+  name: 'Person',
   fields() {
     return {
       id: {
@@ -55,7 +55,7 @@ const PersonType = new GraphQLObjectType({
 });
 
 const MovieType = new GraphQLObjectType({
-  name: "Movie",
+  name: 'Movie',
   fields() {
     return {
       title: {
@@ -75,7 +75,7 @@ const MovieType = new GraphQLObjectType({
 });
 
 const HomeWorldType = new GraphQLObjectType({
-  name: "HomeWorld",
+  name: 'HomeWorld',
   fields() {
     return {
       name: {
@@ -101,7 +101,7 @@ const HomeWorldType = new GraphQLObjectType({
 });
 
 const Query = new GraphQLObjectType({
-  name: "Query",
+  name: 'Query',
   fields() {
     return {
       person: {
@@ -132,7 +132,7 @@ const personTypeArgs = {
 };
 
 const Mutation = new GraphQLObjectType({
-  name: "Mutation",
+  name: 'Mutation',
   fields() {
     return {
       addPerson: {
