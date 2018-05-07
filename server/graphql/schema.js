@@ -184,9 +184,45 @@
 // });
 
 const { buildSchema } = require('graphql');
+const axios = require('axios');
+
 let users = require(`${__dirname}/model`);
 
-class Person {}
+const BASE_URL = 'http://www.swapi.co';
+
+function getFilms(url) {
+  return axios.get(url).then(response => response.data);
+}
+
+class Person {
+  constructor({ id, name, height, films, homeworld }) {
+    this.id = id;
+    this.name = name;
+    this.height = height;
+    this.films = this.getFilms(films);
+    this.homeworld = this.getHomeworld(homeworld);
+  }
+  getFilms(films) {
+    return films[0] ? films.map(getFilms) : [];
+  }
+  getHomeworld(homeworld) {
+    return axios.get(homeworld).then(({ data }) => new Homeworld(data));
+  }
+}
+
+class Homeworld {
+  constructor({ name, population }) {
+    this.name = name;
+    this.population = population;
+  }
+}
+
+class Film {
+  constructor(title, releaseDate) {
+    this.title = title;
+    this.releaseDate = releaseDate;
+  }
+}
 
 const schema = buildSchema(
   `
@@ -194,6 +230,16 @@ const schema = buildSchema(
     id: Int!
     name: String
     height: Int
+    films: [Film]!
+    homeworld: Homeworld
+  },
+  type Homeworld {
+    name: String
+    population: Int
+  },
+  type Film {
+    title: String
+    releaseDate: String
   },
   type Query {
     people: [Person]!
@@ -204,10 +250,12 @@ const schema = buildSchema(
 
 const root = {
   people() {
-    return users;
+    const formatted = users.map(val => new Person(val));
+    return formatted;
   },
   person({ id }) {
-    return users.filter(user => user.id === id)[0];
+    const selected = users.filter(user => user.id === id)[0];
+    return new Person(selected);
   }
 };
 
