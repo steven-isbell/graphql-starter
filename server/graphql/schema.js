@@ -1,197 +1,10 @@
-// const {
-//   GraphQLSchema,
-//   GraphQLObjectType,
-//   GraphQLString,
-//   GraphQLInt,
-//   GraphQLList,
-//   GraphQLNonNull
-// } = require('graphql');
-// const axios = require('axios');
-
-// let users = require(`${__dirname}/model`);
-
-// const BASE_URL = 'http://www.swapi.co';
-
-// function getFilms(url) {
-//   return axios.get(url).then(response => response.data);
-// }
-
-// const PersonType = new GraphQLObjectType({
-//   name: 'Person',
-//   fields() {
-//     return {
-//       id: {
-//         type: GraphQLInt,
-//         resolve(person) {
-//           return person.id;
-//         }
-//       },
-//       name: {
-//         type: GraphQLString,
-//         resolve(person) {
-//           return person.name;
-//         }
-//       },
-//       height: {
-//         type: GraphQLInt,
-//         resolve(person) {
-//           return person.height;
-//         }
-//       },
-//       films: {
-//         type: new GraphQLList(MovieType),
-//         resolve(person) {
-//           return person.films[0] ? person.films.map(getFilms) : [];
-//         }
-//       },
-//       homeworld: {
-//         type: HomeWorldType,
-//         resolve(person) {
-//           return axios.get(person.homeworld).then(response => response.data);
-//         }
-//       }
-//     };
-//   }
-// });
-
-// const MovieType = new GraphQLObjectType({
-//   name: 'Movie',
-//   fields() {
-//     return {
-//       title: {
-//         type: GraphQLString,
-//         resolve(movie) {
-//           return movie.title;
-//         }
-//       },
-//       releaseDate: {
-//         type: GraphQLString,
-//         resolve(movie) {
-//           return movie.release_date;
-//         }
-//       }
-//     };
-//   }
-// });
-
-// const HomeWorldType = new GraphQLObjectType({
-//   name: 'HomeWorld',
-//   fields() {
-//     return {
-//       name: {
-//         type: GraphQLString,
-//         resolve(world) {
-//           return world.name;
-//         }
-//       },
-//       climate: {
-//         type: GraphQLString,
-//         resolve(world) {
-//           return world.climate;
-//         }
-//       },
-//       population: {
-//         type: GraphQLString,
-//         resolve(world) {
-//           return world.population;
-//         }
-//       }
-//     };
-//   }
-// });
-
-// const Query = new GraphQLObjectType({
-//   name: 'Query',
-//   fields() {
-//     return {
-//       person: {
-//         type: GraphQLNonNull(PersonType),
-//         args: {
-//           id: { type: GraphQLNonNull(GraphQLInt) }
-//         },
-//         resolve(root, args) {
-//           return users.filter(user => user.id === args.id)[0];
-//         }
-//       },
-//       people: {
-//         type: new GraphQLList(PersonType),
-//         resolve(root, args) {
-//           return users;
-//         }
-//       }
-//     };
-//   }
-// });
-
-// const personTypeArgs = {
-//   id: { type: GraphQLNonNull(GraphQLInt) },
-//   name: { type: GraphQLString },
-//   height: { type: GraphQLInt },
-//   films: { type: new GraphQLList(GraphQLString) },
-//   homeworld: { type: GraphQLString }
-// };
-
-// const Mutation = new GraphQLObjectType({
-//   name: 'Mutation',
-//   fields() {
-//     return {
-//       addPerson: {
-//         type: PersonType,
-//         args: {
-//           ...personTypeArgs
-//         },
-//         resolve(root, args) {
-//           users.push({ ...args });
-//           return { ...args };
-//         }
-//       },
-//       deletePerson: {
-//         type: GraphQLInt,
-//         args: {
-//           id: { type: GraphQLNonNull(GraphQLInt) }
-//         },
-//         resolve(root, args) {
-//           users = users.filter(user => user.id !== args.id);
-//           return args.id;
-//         }
-//       },
-//       updatePerson: {
-//         type: PersonType,
-//         args: {
-//           ...personTypeArgs
-//         },
-//         resolve(root, args) {
-//           const index = users.findIndex(val => val.id === args.id);
-//           const filtered = users[index];
-//           const update = {
-//             ...filtered,
-//             name: args.name || filtered.name,
-//             height: args.height || filtered.height,
-//             films: args.films || filtered.films,
-//             homeworld: args.homeworld || filtered.homeworld
-//           };
-//           users[index] = update;
-//           return users[index];
-//         }
-//       }
-//     };
-//   }
-// });
-
-// module.exports = new GraphQLSchema({
-//   query: Query,
-//   mutation: Mutation
-// });
-
 const { buildSchema } = require('graphql');
 const axios = require('axios');
 
 let users = require(`${__dirname}/model`);
 
-const BASE_URL = 'http://www.swapi.co';
-
 function getFilms(url) {
-  return axios.get(url).then(response => response.data);
+  return axios.get(url).then(({ data }) => new Film(data));
 }
 
 class Person {
@@ -218,9 +31,9 @@ class Homeworld {
 }
 
 class Film {
-  constructor(title, releaseDate) {
+  constructor({ title, release_date }) {
     this.title = title;
-    this.releaseDate = releaseDate;
+    this.releaseDate = release_date;
   }
 }
 
@@ -244,6 +57,11 @@ const schema = buildSchema(
   type Query {
     people: [Person]!
     person(id: Int!): Person
+  },
+  type Mutation {
+    addPerson(id: Int!, name: String!, height: Int!, films: [String!]!, homeworld: String): Person!
+    deletePerson(id: Int!): Int
+    updatePerson(id: Int!, name: String, height: Int, films: [String], homeworld: String): Person
   }
 `
 );
@@ -255,7 +73,30 @@ const root = {
   },
   person({ id }) {
     const selected = users.filter(user => user.id === id)[0];
+    if (!selected) throw new Error(`No Person Matched Id: ${id}`);
     return new Person(selected);
+  },
+  addPerson(person) {
+    users.push(person);
+    return new Person(users[users.length - 1]);
+  },
+  deletePerson({ id }) {
+    users = users.filter(val => val.id !== id);
+    return id;
+  },
+  updatePerson({ id, name, height, films, homeworld }) {
+    const index = users.findIndex(val => val.id === id);
+    if (!index) throw new Error(`No Person Matched Id: ${id}`);
+    const filtered = users[index];
+    const update = {
+      ...filtered,
+      name: name || filtered.name,
+      height: height || filtered.height,
+      films: films || filtered.films,
+      homeworld: homeworld || filtered.homeworld
+    };
+    users[index] = update;
+    return new Person(users[index]);
   }
 };
 
