@@ -1,17 +1,16 @@
-import React from "react";
-import DeletePersonMutation from "./mutations/DeletePersonMutation";
+import React from 'react';
 
 const cardStyle = {
-  height: "300px",
-  width: "250px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  flexDirection: "column",
-  border: "3px solid black",
-  margin: "5px",
-  padding: "10px",
-  borderRadius: "3px"
+  height: '300px',
+  width: '250px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexDirection: 'column',
+  border: '3px solid black',
+  margin: '5px',
+  padding: '10px',
+  borderRadius: '3px'
 };
 
 const Card = props => (
@@ -24,21 +23,7 @@ const Card = props => (
     <p>{props.homeworld.name}</p>
     <h2>Number of Film Appearances</h2>
     <p>{props.films.length}</p>
-    <DeletePersonMutation>
-      {(loading, err, deletePerson) => {
-        return (
-          <div>
-            <button
-              onClick={() => deletePerson({ variables: { id: props.id } })}
-            >
-              Delete
-            </button>
-            {loading && <p>Loading...</p>}
-            {err && <p>Error :(</p>}
-          </div>
-        );
-      }}
-    </DeletePersonMutation>
+    {/* MUTATION COMPONENT */}
   </div>
 );
 
