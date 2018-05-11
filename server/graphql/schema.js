@@ -66,12 +66,14 @@ const schema = buildSchema(
 `
 );
 
+// First argument are the arguments, second is the request object
+// DB stuff will be used off req like normal. req.app.get('db');
 const root = {
-  people() {
+  people(_, req) {
     const formatted = users.map(val => new Person(val));
     return formatted;
   },
-  person({ id }) {
+  person({ id }, req) {
     const selected = users.filter(user => user.id === id)[0];
     if (!selected) throw new Error(`No Person Matched Id: ${id}`);
     return new Person(selected);
