@@ -21,7 +21,7 @@ const Card = props => (
     <br />
     <h2>Homeworld</h2>
     <p>{props.homeworld.name}</p>
-    <h2>Number of Film Appearances</h2>
+    <h2># of Appearances</h2>
     <p>{props.films.length}</p>
     {/* MUTATION COMPONENT */}
   </div>
