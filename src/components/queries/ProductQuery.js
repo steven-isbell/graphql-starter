@@ -1,27 +1,21 @@
-import React, { Component } from "react";
-import { gql } from "apollo-boost";
-import { Query } from "react-apollo";
+import React, { Component } from 'react';
+import { gql } from 'apollo-boost';
+import { Query } from 'react-apollo';
 
-export const GET_PEOPLE = gql`
-  query getPeople {
-    people {
-      id
-      height
+export const GET_PRODUCTS = gql`
+  query getProducts {
+    products {
       name
-      films {
-        title
-      }
-      homeworld {
-        name
-      }
+      color
+      price
     }
   }
 `;
 
-export default class PeopleQuery extends Component {
+export default class ProductQuery extends Component {
   render() {
     return (
-      <Query query={GET_PEOPLE}>
+      <Query query={GET_PRODUCTS}>
         {({ loading, error, data }) => {
           if (loading)
             return (

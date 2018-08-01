@@ -1,0 +1,15 @@
+type Product {
+  id: ID!
+  name: String!
+  price: Float!
+  color: String!
+}
+type Query {
+  products: [Product!]!
+  product(id: ID!): Product
+  cart: [Product]!
+}
+type Mutation {
+  addToCart(id: ID!): [Product]!
+  deleteFromCart(id: ID!): Int
+}

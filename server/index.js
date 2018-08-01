@@ -1,35 +1,23 @@
-const express = require('express');
-const { json } = require('body-parser');
-const cors = require('cors');
-const graphqlHTTP = require('express-graphql');
+const { readFileSync } = require('fs');
+const { GraphQLServer } = require('graphql-yoga');
 
-const { schema, root } = require(`${__dirname}/graphql/schema`);
+const typeDefs = readFileSync(`${__dirname}/schema/typeDefs.graphql`, 'utf8');
+const resolvers = require('./schema/resolvers');
 
-const port = 3001;
+const options = {
+  port: 3001,
+  endpoint: '/graphql',
+  playground: '/graphiql'
+};
 
-const app = express();
-
-app.use(json());
-app.use(cors());
-
-app.use(
-  '/graphql',
-  graphqlHTTP({
-    schema,
-    rootValue: root,
-    graphiql: true
+const server = new GraphQLServer({
+  typeDefs,
+  resolvers,
+  context: req => ({
+    ...req.request
   })
-);
-
-app.post(
-  '/graphql',
-  graphqlHTTP({
-    schema,
-    rootValue: root,
-    graphiql: false
-  })
-);
-
-app.listen(port, () => {
-  console.log(`listening on ${port}`);
 });
+
+server.start(options, () =>
+  console.log(`Server is running on localhost:${options.port}`)
+);

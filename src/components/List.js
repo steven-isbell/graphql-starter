@@ -1,11 +1,11 @@
-import React, { Component } from "react";
-import Card from "./Card";
+import React, { Component } from 'react';
+import Card from './Card';
 
 const listStyle = {
-  width: "100%",
-  display: "flex",
-  flexWrap: "wrap",
-  justifyContent: "center"
+  width: '100%',
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'center'
 };
 
 class List extends Component {
