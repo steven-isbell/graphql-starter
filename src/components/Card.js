@@ -15,14 +15,11 @@ const cardStyle = {
 
 const Card = props => (
   <div style={cardStyle}>
-    <p>Character:</p>
+    <p>Product:</p>
     <h1>{props.name}</h1>
-    <p>{props.height}</p>
+    <p>{props.price}</p>
     <br />
-    <h2>Homeworld</h2>
-    <p>{props.homeworld.name}</p>
-    <h2># of Appearances</h2>
-    <p>{props.films.length}</p>
+    <p>{props.color}</p>
     {/* MUTATION COMPONENT */}
   </div>
 );
