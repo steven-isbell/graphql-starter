@@ -12,7 +12,8 @@ class List extends Component {
   render() {
     return (
       <div style={listStyle}>
-        {this.props.list.map((val, i) => <Card {...val} key={i} />)}
+        {/* data.products.map((val, i) => <Card {...val} key={i} />)*/}
+        {/* Wrap the list on our Get Products Query and uncomment the map */}
       </div>
     );
   }

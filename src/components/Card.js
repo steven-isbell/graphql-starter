@@ -20,7 +20,8 @@ const Card = props => (
     <p>{props.price}</p>
     <br />
     <p>{props.color}</p>
-    {/* MUTATION COMPONENT */}
+    <button>Delete</button>
+    {/* Wrap Our Button in the DeletePerson Mutation */}
   </div>
 );
 
