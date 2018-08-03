@@ -47,23 +47,21 @@ class addProduct extends Component {
         >
           {(addProduct, { loading, error }) => (
             <div>
-              <div>
-                <button
-                  onClick={() => {
-                    addProduct({
-                      variables: {
-                        name: this.state.name,
-                        price: this.state.price,
-                        color: this.state.color
-                      }
-                    });
-                  }}
-                >
-                  Add
-                </button>
-                {loading && <p>Loading...</p>}
-                {error && <p>Error :(</p>}
-              </div>
+              <button
+                onClick={() => {
+                  addProduct({
+                    variables: {
+                      name: this.state.name,
+                      price: this.state.price,
+                      color: this.state.color
+                    }
+                  });
+                }}
+              >
+                Add
+              </button>
+              {loading && <p>Loading...</p>}
+              {error && <p>Error :(</p>}
             </div>
           )}
         </Mutation>
@@ -72,4 +70,4 @@ class addProduct extends Component {
   }
 }
 
-export default addProduct;
+export default AddProduct;
