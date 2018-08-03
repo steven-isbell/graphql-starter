@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo';
 
-import ProductQuery from './components/queries/ProductQuery';
 import List from './components/List';
+import AddProduct from './components/AddProduct';
 
 import logo from './logo.png';
 import './App.css';
@@ -18,7 +18,8 @@ class App extends Component {
             <img src={logo} className="App-logo" alt="logo" />
             <h1 className="App-title">Welcome to GraphQL</h1>
           </header>
-          <ProductQuery render={props => <List list={props.products} />} />
+          <AddProduct />
+          <List />
         </div>
       </ApolloProvider>
     );

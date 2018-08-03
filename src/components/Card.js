@@ -1,5 +1,15 @@
 import React from 'react';
-import DeletePersonMutation from './mutations/DeletePersonMutation';
+// Should do this in a new component
+import { Mutation } from 'react-apollo';
+import { gql } from 'apollo-boost';
+
+import { GET_PRODUCTS } from './List';
+
+export const DELETE_PRODUCT = gql`
+  mutation deleteProduct($id: ID!) {
+    deleteProduct(id: $id)
+  }
+`;
 
 const cardStyle = {
   height: '300px',
@@ -20,22 +30,35 @@ const Card = props => (
     <h1>{props.name}</h1>
     <p>{props.price}</p>
     <br />
-    <DeletePersonMutation>
-      {(loading, err, deletePerson) => {
-        return (
+    <p>{props.color}</p>
+    <br />
+    <Mutation
+      mutation={DELETE_PRODUCT}
+      update={(cache, { data: { deleteProduct } }) => {
+        let { products } = cache.readQuery({ query: GET_PRODUCTS });
+        const updated = products.filter(val => val.id !== deleteProduct);
+        cache.writeQuery({
+          query: GET_PRODUCTS,
+          data: { products: updated }
+        });
+      }}
+    >
+      {(deleteProduct, { loading, error }) => (
+        <div>
           <div>
             <button
-              onClick={() => deletePerson({ variables: { id: props.id } })}
+              onClick={() => {
+                deleteProduct({ variables: { id: props.id } });
+              }}
             >
               Delete
             </button>
             {loading && <p>Loading...</p>}
-            {err && <p>Error :(</p>}
+            {error && <p>Error :(</p>}
           </div>
-        );
-      }}
-    </DeletePersonMutation>
-    <p>{props.color}</p>
+        </div>
+      )}
+    </Mutation>
   </div>
 );
 

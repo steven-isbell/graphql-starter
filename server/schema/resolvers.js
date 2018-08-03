@@ -1,8 +1,5 @@
-const products = require('../model');
-
-// Can't stick cart on session because graphql won't persist
-// the session when using graphiql
-let cart = [];
+// use let because we'll override the value in the delete
+let products = require('../model');
 
 const resolvers = {
   Query: {
@@ -11,20 +8,25 @@ const resolvers = {
     },
     product(_, { id }) {
       return products.find(val => val.id === +id);
-    },
-    cart(_, args, req) {
-      if (cart.length) return cart;
-      else throw new Error('Cart is empty!');
     }
   },
   Mutation: {
-    addToCart(_, { id }, req) {
-      const item = products.find(val => val.id === +id);
-      cart.push(item);
-      return cart;
+    addProduct(_, args, req) {
+      const id = Math.floor(Math.random() * 100 + 1);
+      // add an id and grab all the values from the arguments object
+      const item = {
+        id,
+        ...args
+      };
+      products.push(item);
+      // return the item to cachebust on the frontend
+      return item;
     },
-    deleteFromCart(_, { id }, req) {
-      cart = cart.filter(val => val.id !== +id);
+    deleteProduct(_, { id }, req) {
+      // delete the product we don't need by the id passed back
+      products = products.filter(val => val.id !== +id);
+      // return id to cachebust on client
+      return id;
     }
   }
 };

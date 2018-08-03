@@ -7,9 +7,8 @@ type Product {
 type Query {
   products: [Product!]!
   product(id: ID!): Product
-  cart: [Product]!
 }
 type Mutation {
-  addToCart(id: ID!): [Product]!
-  deleteFromCart(id: ID!): Int
+  addProduct(name: String!, price: Float!, color: String!): Product
+  deleteProduct(id: ID!): ID!
 }
