@@ -16,7 +16,7 @@ export const ADD_PRODUCT = gql`
   }
 `;
 
-class addProduct extends Component {
+class AddProduct extends Component {
   state = { properties: ['name', 'price', 'color'] };
   handleTextInput = e => {
     this.setState({ [e.target.name]: e.target.value });
@@ -36,14 +36,7 @@ class addProduct extends Component {
         ))}
         <Mutation
           mutation={ADD_PRODUCT}
-          update={(cache, { data: { addProduct } }) => {
-            let { products } = cache.readQuery({ query: GET_PRODUCTS });
-            const updated = products.concat(addProduct);
-            cache.writeQuery({
-              query: GET_PRODUCTS,
-              data: { products: updated }
-            });
-          }}
+          refetchQueries={[{ query: GET_PRODUCTS }]}
         >
           {(addProduct, { loading, error }) => (
             <div>
